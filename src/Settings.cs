@@ -31,7 +31,7 @@ public static class Settings
     {
         if (entry == null) throw new ArgumentNullException(nameof(entry));
         T[] values = Enum.GetValues<T>();
-        string[] names = Enum.GetNames<T>();
+        string[] names = Array.ConvertAll(Enum.GetNames<T>(), Setting.spaced);
         register(new Setting(mod, label, ControlKind.Dropdown, 0f, Math.Max(1, values.Length - 1), true, names,
             () => Math.Max(0, Array.IndexOf(values, entry.Value)), value => entry.Value = values[(int)value]));
         entry.OnEntryValueChanged.Subscribe((_, value) => registry_show(mod, label, Math.Max(0, Array.IndexOf(values, value))));

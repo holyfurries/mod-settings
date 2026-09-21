@@ -2,7 +2,7 @@ using System;
 using MelonLoader;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(ModSettings.Main), "Mod Settings", "0.1.0", "holyfurries")]
+[assembly: MelonInfo(typeof(ModSettings.Main), "Mod Settings", "0.1.1", "holyfurries")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 namespace ModSettings;

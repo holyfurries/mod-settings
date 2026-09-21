@@ -28,6 +28,7 @@ internal static class Program
         Setting position = registry.at(2);
         require(position.clamp(1.4f) == 1f && position.clamp(7f) == 2f, "Dropdown values snap to an option");
 
+        require(Setting.spaced("TopCenter") == "Top Center" && Setting.spaced("top_left") == "top left" && Setting.spaced("HUDOnly") == "HUD Only" && Setting.spaced("Off") == "Off", "Enum names read as words");
         rejects<ArgumentOutOfRangeException>(() => make("", "Label"), "Empty mod name rejected");
         rejects<ArgumentOutOfRangeException>(() => make("Mod", new string('a', 49)), "Oversized label rejected");
         rejects<ArgumentOutOfRangeException>(() => make("Mod", "Range", ControlKind.Slider, 2f, 2f), "Empty slider range rejected");

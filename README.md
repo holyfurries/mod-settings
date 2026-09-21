@@ -27,7 +27,7 @@ Settings.dropdown("My Mod", "Overlay corner", corner);
   `entry.OnEntryValueChanged` to react.
 - Changing the entry from code, such as a hotkey, updates the control.
 - `slider` takes `whole_numbers: true` for integer steps. `dropdown` works with any enum and
-  lists its names.
+  lists its names as words (`TopCenter` shows as "Top Center").
 - Up to 128 settings in total. Labels are at most 48 characters, mod names 32.
 
 If a game update changes the settings screen, the tab is skipped with a warning in the log and

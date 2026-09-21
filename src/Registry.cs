@@ -36,6 +36,19 @@ internal sealed class Setting
         this.write = write;
     }
 
+    public static string spaced(string name)
+    {
+        if (string.IsNullOrEmpty(name) || name.Length > 48) throw new ArgumentOutOfRangeException(nameof(name));
+        var text = new System.Text.StringBuilder(name.Length + 8);
+        for (int i = 0; i < name.Length; i++)
+        {
+            bool word_start = i > 0 && char.IsUpper(name[i]) && (char.IsLower(name[i - 1]) || (i + 1 < name.Length && char.IsLower(name[i + 1])));
+            if (word_start || name[i] == '_') text.Append(' ');
+            if (name[i] != '_') text.Append(name[i]);
+        }
+        return text.ToString();
+    }
+
     public float clamp(float value)
     {
         if (!float.IsFinite(value)) return minimum;
