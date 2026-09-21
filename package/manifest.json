@@ -1,0 +1,9 @@
+{
+  "name": "ModSettings",
+  "version_number": "0.1.0",
+  "website_url": "https://github.com/holyfurries/mod-settings",
+  "description": "Adds a Mods tab to the game's settings screen. Other mods register switches, sliders and dropdowns backed by their MelonPreferences with one call each. IL2CPP.",
+  "dependencies": [
+    "LavaGang-MelonLoader-0.7.3"
+  ]
+}
