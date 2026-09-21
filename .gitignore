@@ -15,4 +15,4 @@ UserData/
 .env.*
 
 __pycache__/
-!/package/CasinoLedger.dll
+!/package/ModSettings.dll
