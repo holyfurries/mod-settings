@@ -1,4 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable></PropertyGroup>
   <ItemGroup><Compile Include="../src/Registry.cs" Link="Registry.cs" /></ItemGroup>
+  <PropertyGroup Condition="'$(MelonLoaderDir)' != ''">
+    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MelonLoaderDir)' != ''">
+    <Compile Include="../src/Settings.cs" Link="Settings.cs" />
+    <Reference Include="MelonLoader" HintPath="$(MelonLoaderDir)/net6/MelonLoader.dll" />
+    <Reference Include="Tomlet" HintPath="$(MelonLoaderDir)/net6/Tomlet.dll" />
+    <Reference Include="0Harmony" HintPath="$(MelonLoaderDir)/net6/0Harmony.dll" />
+  </ItemGroup>
 </Project>

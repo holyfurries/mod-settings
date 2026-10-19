@@ -11,7 +11,6 @@ using UnityEngine.UI;
 
 namespace ModSettings;
 
-/// Builds the Mods tab by cloning the game's own tab, scrolling panel and option rows, so it keeps the game's look.
 internal static class Tab
 {
     private const string tab_name = "ModSettingsTab";
@@ -77,7 +76,7 @@ internal static class Tab
         {
             if (!selected) return;
             screen.ShowCategory(index);
-            for (int i = 0; i < registry.count; i++) registry.at(i).show?.Invoke(registry.at(i).clamp(registry.at(i).read()));
+            for (int i = 0; i < registry.count; i++) registry.at(i).show(registry.at(i).read());
         }));
         fit_tabs(screen.GetComponent<RectTransform>(), tab.transform.parent);
     }
@@ -139,7 +138,7 @@ internal static class Tab
         toggle.optionName = setting.label;
         name_row(row, setting.label);
         toggle.OnChanged.AddListener(new Action<bool>(value => Settings.change(setting, value ? 1f : 0f, Time.unscaledTime)));
-        setting.show = value => { if (toggle != null) toggle.SetStateWithoutNotify(value >= 0.5f); };
+        setting.bind(value => { if (toggle != null) toggle.SetStateWithoutNotify(value >= 0.5f); });
         row.SetActive(true);
     }
 
@@ -172,12 +171,12 @@ internal static class Tab
             Settings.change(setting, value, Time.unscaledTime);
             if (value_text != null) value_text.text = setting.format(value);
         }));
-        setting.show = value =>
+        setting.bind(value =>
         {
             if (slider == null) return;
             slider.SetValueWithoutNotify(value);
             if (value_text != null) value_text.text = setting.format(value);
-        };
+        });
         row.SetActive(true);
     }
 
@@ -193,7 +192,7 @@ internal static class Tab
         dropdown.ClearOptions();
         dropdown.AddOptions(options);
         dropdown.onValueChanged.AddListener(new Action<int>(value => Settings.change(setting, value, Time.unscaledTime)));
-        setting.show = value => { if (dropdown != null) dropdown.SetValueWithoutNotify((int)value); };
+        setting.bind(value => { if (dropdown != null) dropdown.SetValueWithoutNotify((int)value); });
         row.SetActive(true);
     }
 

@@ -16,7 +16,8 @@ internal sealed class Setting
     public readonly string[] options;
     public readonly Func<float> read;
     public readonly Action<float> write;
-    public Action<float>? show;
+    private readonly Action<float>?[] views = new Action<float>?[2];
+    private int view_index;
 
     public Setting(string mod, string label, ControlKind kind, float minimum, float maximum, bool whole_numbers,
         string[] options, Func<float> read, Action<float> write)
@@ -24,6 +25,11 @@ internal sealed class Setting
         if (string.IsNullOrWhiteSpace(mod) || mod.Length > 32) throw new ArgumentOutOfRangeException(nameof(mod));
         if (string.IsNullOrWhiteSpace(label) || label.Length > 48) throw new ArgumentOutOfRangeException(nameof(label));
         if (!float.IsFinite(minimum) || !float.IsFinite(maximum) || maximum <= minimum) throw new ArgumentOutOfRangeException(nameof(maximum));
+        if (whole_numbers || kind != ControlKind.Slider)
+        {
+            if (minimum != MathF.Truncate(minimum) || maximum != MathF.Truncate(maximum))
+                throw new ArgumentOutOfRangeException(nameof(minimum));
+        }
         if (kind == ControlKind.Dropdown && (options.Length < 2 || options.Length > 32)) throw new ArgumentOutOfRangeException(nameof(options));
         this.mod = mod;
         this.label = label;
@@ -34,6 +40,19 @@ internal sealed class Setting
         this.options = options;
         this.read = read;
         this.write = write;
+    }
+
+    public void bind(Action<float> view)
+    {
+        if (view == null) throw new ArgumentNullException(nameof(view));
+        views[view_index] = view;
+        view_index = (view_index + 1) % views.Length;
+    }
+
+    public void show(float value)
+    {
+        float bounded = clamp(value);
+        for (int i = 0; i < views.Length; i++) views[i]?.Invoke(bounded);
     }
 
     public static string spaced(string name)
