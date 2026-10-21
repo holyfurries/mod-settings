@@ -21,13 +21,12 @@ jobs:
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: 8.0.x
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702
         with:
-          python-version: '3.12'
-      - name: Validate release metadata and CI helpers
+          nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/fe13242281a67641c0102cdb1087f0ebe586c7df.tar.gz
+      - name: Validate release metadata and tooling
         run: |
-          python ci/release.py metadata
-          python -m unittest discover -s ci -p 'test_*.py'
+          nix-shell -p cargo rustc rustfmt clippy --run 'cargo fmt --check && cargo test --locked && cargo clippy --locked --all-targets -- -D warnings && cargo run --locked -- metadata'
       - name: Run regression checks
         run: |
           dotnet run --project tests/Tests.csproj
@@ -43,14 +42,19 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
-          python-version: '3.12'
+          dotnet-version: 8.0.x
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702
+        with:
+          nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/fe13242281a67641c0102cdb1087f0ebe586c7df.tar.gz
       - name: Package Thunderstore ZIP
         id: metadata
         run: |
-          python package.py
-          python ci/release.py package
+          nix-shell -p cargo rustc --run 'cargo run --locked -- metadata'
+          dotnet tool restore
+          dotnet tool run tcli build --config-path dist/thunderstore.toml
+          nix-shell -p cargo rustc --run 'cargo run --locked -- package'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: thunderstore-package
@@ -70,21 +74,21 @@ jobs:
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: 8.0.x
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702
         with:
-          python-version: '3.12'
+          nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/fe13242281a67641c0102cdb1087f0ebe586c7df.tar.gz
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: thunderstore-package
           path: dist
-      - name: Verify package and install Thunderstore CLI
+      - name: Verify package and restore Thunderstore CLI
         run: |
-          python ci/release.py package
-          dotnet tool install --tool-path "$RUNNER_TEMP/tcli" tcli --version 0.2.4
+          nix-shell -p cargo rustc --run 'cargo run --locked -- package'
+          dotnet tool restore
       - name: Publish the built ZIP
         env:
           TCLI_AUTH_TOKEN: ${{ secrets.TCLI_AUTH_TOKEN }}
           PACKAGE_FILE: ${{ needs.package.outputs.filename }}
         run: |
           test -n "$TCLI_AUTH_TOKEN" || { echo 'Set the TCLI_AUTH_TOKEN secret.'; exit 1; }
-          "$RUNNER_TEMP/tcli/tcli" publish --config-path dist/thunderstore.toml --file "dist/$PACKAGE_FILE"
+          dotnet tool run tcli publish --config-path dist/thunderstore.toml --file "dist/$PACKAGE_FILE"

@@ -1,5 +1,9 @@
 # Mod Settings
 
+[Holy Furries Studio](https://holyfurries.com) ·
+[Thunderstore](https://thunderstore.io/c/schedule-i/p/holyfurries/ModSettings/)
+· [Source](https://github.com/holyfurries/mod-settings)
+
 Adds a **Mods** tab to Schedule I's settings screen in the main menu and pause
 menu. Participating mods appear under their own headings with native switches,
 sliders, and dropdowns. Changes are saved to `UserData/MelonPreferences.cfg`.
@@ -52,4 +56,5 @@ See
 [BUILDING.md](https://github.com/holyfurries/mod-settings/blob/main/BUILDING.md)
 for builds, tests, packaging, and in-game checks.
 
-[MIT license](https://github.com/holyfurries/mod-settings/blob/main/LICENSE).
+[Code: MIT](https://github.com/holyfurries/mod-settings/blob/main/LICENSE).
+[Icon: studio asset terms](https://github.com/holyfurries/brand-assets/blob/main/LICENSE).
