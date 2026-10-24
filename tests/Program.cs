@@ -42,6 +42,14 @@ internal static class Program
         require(percent.format(41.6f) == "42", "Wide sliders show whole numbers");
         Setting position = registry.at(2);
         require(position.clamp(1.4f) == 1f && position.clamp(7f) == 2f, "Dropdown values snap to an option");
+        Setting shortcut = make("Clear Minimap", "Zoom in", ControlKind.Keybind, 0, 2, true, new[] { "Unbound", "Page Up", "Mouse 3" });
+        require(shortcut.format(0) == "Unbound" && shortcut.format(1) == "Page Up", "Keybinds show their names and disabled state");
+        require(shortcut.clamp(-1) == 0 && shortcut.format(float.NaN) == "Unbound", "Undefined saved keys display as unbound");
+        require(shortcut.clamp(100) == 2 && shortcut.clamp(1.6f) == 2, "Keybind indices stay inside the supported key list");
+        rejects<ArgumentOutOfRangeException>(() => make("Mod", "Keys", ControlKind.Keybind, 0, 1, true, new[] { "Unbound" }),
+            "Keybinds require a bounded key list");
+        rejects<ArgumentOutOfRangeException>(() => make("Mod", "Keys", ControlKind.Keybind, 0, 3, true, new[] { "Unbound", "Space" }),
+            "Keybind range must match its key list");
 
         require(Setting.spaced("TopCenter") == "Top Center" && Setting.spaced("top_left") == "top left" && Setting.spaced("HUDOnly") == "HUD Only" && Setting.spaced("Off") == "Off", "Enum names read as words");
         rejects<ArgumentOutOfRangeException>(() => make("", "Label"), "Empty mod name rejected");
@@ -98,6 +106,31 @@ internal static class Program
         Settings.dropdown("Coordinated Police", "Corner", corner);
         Settings.change(Settings.registry.at(2), 0, 3);
         require(corner.Value == TestCorner.TopLeft, "Selecting the first option repairs an undefined enum value");
+
+        var key = (MelonLoader.MelonPreferences_Entry<UnityEngine.KeyCode>)Activator.CreateInstance(
+            typeof(MelonLoader.MelonPreferences_Entry<UnityEngine.KeyCode>), nonPublic: true)!;
+        key.Value = UnityEngine.KeyCode.PageUp;
+        Settings.keybind("Clear Minimap", "Zoom in", key);
+        Setting shortcut = Settings.registry.at(3);
+        float menu_key = -1;
+        float pause_key = -1;
+        shortcut.bind(value => menu_key = value);
+        shortcut.bind(value => pause_key = value);
+        int selected = Array.IndexOf(Settings.key_codes, UnityEngine.KeyCode.Mouse3);
+        Settings.unsaved_since_seconds = float.NaN;
+        Settings.change(shortcut, selected, 4);
+        require(key.Value == UnityEngine.KeyCode.Mouse3 && menu_key == selected && pause_key == selected,
+            "Rebinding updates the real key preference and both menus");
+        require(Settings.unsaved_since_seconds == 4, "Rebinding schedules persistence");
+        key.Value = UnityEngine.KeyCode.PageDown;
+        require(shortcut.format(menu_key) == "Page Down" && menu_key == pause_key,
+            "Programmatic key changes refresh both captions");
+        Settings.change(shortcut, 0, 5);
+        require(key.Value == UnityEngine.KeyCode.None && shortcut.format(menu_key) == "Unbound", "Clearing a shortcut stores None");
+        key.Value = (UnityEngine.KeyCode)9999;
+        require(shortcut.format(shortcut.read()) == "Unbound", "Undefined key values do not select an unrelated binding");
+        Settings.change(shortcut, 0, 6);
+        require(key.Value == UnityEngine.KeyCode.None, "Clearing repairs an invalid saved key");
     }
 
     private enum TestCorner { TopLeft, TopRight }

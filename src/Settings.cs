@@ -1,5 +1,6 @@
 using System;
 using MelonLoader;
+using UnityEngine;
 
 namespace ModSettings;
 
@@ -7,6 +8,7 @@ public static class Settings
 {
     private const int slider_integer_magnitude_max = 1 << 24;
     internal static readonly Registry registry = new();
+    internal static readonly KeyCode[] key_codes = Enum.GetValues<KeyCode>();
     internal static float unsaved_since_seconds = float.NaN;
 
     public static void toggle(string mod, string label, MelonPreferences_Entry<bool> entry)
@@ -44,6 +46,17 @@ public static class Settings
         registry.add(new Setting(mod, label, ControlKind.Dropdown, 0f, Math.Max(1, values.Length - 1), true, names,
             () => Array.IndexOf(values, entry.Value), value => entry.Value = values[(int)value]));
         entry.OnEntryValueChanged.Subscribe((_, value) => registry_show(mod, label, Array.IndexOf(values, value)));
+    }
+
+    public static void keybind(string mod, string label, MelonPreferences_Entry<KeyCode> entry)
+    {
+        if (entry == null) throw new ArgumentNullException(nameof(entry));
+        if (key_codes.Length < 2 || key_codes.Length > 512 || key_codes[0] != KeyCode.None)
+            throw new InvalidOperationException("Unexpected Unity key codes.");
+        string[] names = Array.ConvertAll(key_codes, key => key == KeyCode.None ? "Unbound" : Setting.spaced(key.ToString()));
+        registry.add(new Setting(mod, label, ControlKind.Keybind, 0f, key_codes.Length - 1, true, names,
+            () => Array.IndexOf(key_codes, entry.Value), value => entry.Value = key_codes[(int)value]));
+        entry.OnEntryValueChanged.Subscribe((_, value) => registry_show(mod, label, Array.IndexOf(key_codes, value)));
     }
 
     internal static void change(Setting setting, float value, float now_seconds)
