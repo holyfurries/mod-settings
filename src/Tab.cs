@@ -218,7 +218,6 @@ internal static class Tab
         slider.maxValue = setting.maximum;
         slider.wholeNumbers = setting.whole_numbers;
         SettingsLayout.slider(row, slider, value_text);
-        TMP_InputField? input = value_text != null ? add_slider_input(row, value_text, setting) : null;
         if (value_text != null)
         {
             value_text.gameObject.SetActive(true);
@@ -228,66 +227,15 @@ internal static class Tab
         slider.onValueChanged.AddListener(new Action<float>(value =>
         {
             Settings.change(setting, value, Time.unscaledTime);
-            if (input != null && !input.isFocused) input.SetTextWithoutNotify(setting.format(value));
+            if (value_text != null) value_text.text = setting.format(value);
         }));
         setting.bind(value =>
         {
             if (slider == null) return;
             slider.SetValueWithoutNotify(value);
-            if (input != null && !input.isFocused) input.SetTextWithoutNotify(setting.format(value));
+            if (value_text != null) value_text.text = setting.format(value);
         });
         row.SetActive(true);
-    }
-
-    private static TMP_InputField add_slider_input(GameObject row, TextMeshProUGUI text, Setting setting)
-    {
-        var root = new GameObject("NumericValue", new[] { Il2CppType.Of<RectTransform>() });
-        root.transform.SetParent(row.transform, false);
-        RectTransform rect = root.GetComponent<RectTransform>();
-        RectTransform caption = text.rectTransform;
-        rect.anchorMin = caption.anchorMin;
-        rect.anchorMax = caption.anchorMax;
-        rect.pivot = caption.pivot;
-        rect.anchoredPosition = caption.anchoredPosition;
-        rect.sizeDelta = new Vector2(caption.sizeDelta.x, 30f);
-        Image background = root.AddComponent<Image>();
-        background.color = Color.white;
-        caption.SetParent(root.transform, false);
-        caption.anchorMin = Vector2.zero;
-        caption.anchorMax = Vector2.one;
-        caption.offsetMin = Vector2.zero;
-        caption.offsetMax = Vector2.zero;
-        text.raycastTarget = false;
-        root.AddComponent<RectMask2D>();
-        text.overflowMode = TextOverflowModes.Overflow;
-        text.richText = false;
-        TMP_InputField input = root.AddComponent<TMP_InputField>();
-        input.targetGraphic = background;
-        input.transition = Selectable.Transition.ColorTint;
-        ColorBlock colors = input.colors;
-        colors.normalColor = Color.clear;
-        colors.highlightedColor = new Color(1, 1, 1, 0.08f);
-        colors.selectedColor = new Color(1, 1, 1, 0.12f);
-        colors.pressedColor = new Color(1, 1, 1, 0.18f);
-        colors.disabledColor = Color.clear;
-        colors.colorMultiplier = 1;
-        colors.fadeDuration = 0.08f;
-        input.colors = colors;
-        input.textViewport = rect;
-        input.textComponent = text;
-        input.characterLimit = 32;
-        input.lineType = TMP_InputField.LineType.SingleLine;
-        input.customCaretColor = true;
-        input.caretColor = text.color;
-        input.SetTextWithoutNotify(setting.format(setting.read()));
-        background.canvasRenderer.SetColor(Color.clear);
-        input.onEndEdit.AddListener(new Action<string>(value =>
-        {
-            if (!input.wasCanceled && setting.try_number(value, out float number))
-                Settings.change(setting, number, Time.unscaledTime);
-            input.SetTextWithoutNotify(setting.format(setting.read()));
-        }));
-        return input;
     }
 
     private static void add_dropdown(Transform rows, SettingsDropdown? template, Setting setting)

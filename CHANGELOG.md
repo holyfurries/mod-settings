@@ -1,11 +1,5 @@
 # Changelog
 
-## 0.3.1 (unreleased)
-
-- Allow clicking slider values to enter exact numbers. Out-of-range values clamp
-  to the nearest limit, invalid input restores the current value, and Escape
-  cancels the edit.
-
 ## 0.3.0 — 2026-10-23
 
 - Add configurable keybind controls with input capture, cancellation, and an

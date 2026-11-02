@@ -10,10 +10,7 @@ sliders, dropdowns, and keybind controls. Changes are saved to
 `UserData/MelonPreferences.cfg`.
 
 Mod options use consistent columns and compact row spacing. Slider values sit
-beside their tracks. Click a slider value to type an exact number. Press Enter
-to apply it or Escape to cancel. Out-of-range numbers clamp to the nearest
-limit. Invalid input restores the current value. Built-in settings panels keep
-their original layout.
+beside their tracks. Built-in settings panels keep their original layout.
 
 ## Install
 
@@ -25,7 +22,7 @@ other installed mods register them.
 
 ## For mod authors
 
-Reference `ModSettings.dll`, add `holyfurries-ModSettings-0.3.1` to your
+Reference `ModSettings.dll`, add `holyfurries-ModSettings-0.3.0` to your
 Thunderstore dependencies, and register existing MelonPreferences entries in
 `OnInitializeMelon`:
 

@@ -168,7 +168,7 @@ internal static class SettingsLayout
                 {
                     value.ForceMeshUpdate(true, true);
                     float bounds_width = Math.Max(value.GetPreferredValues(setting.format(setting.minimum)).x, value.GetPreferredValues(setting.format(setting.maximum)).x);
-                    value_widths[count] = Math.Max(48f, Math.Max(bounds_width, value.GetPreferredValues(setting.format(setting.read())).x) + 12f);
+                    value_widths[count] = Math.Max(bounds_width, value.GetPreferredValues(setting.format(setting.read())).x);
                 }
             }
             else if (setting.kind == ControlKind.Toggle)
@@ -216,8 +216,7 @@ internal static class SettingsLayout
             control.offsetMax = new Vector2(start + width, control.offsetMax.y);
             TextMeshProUGUI? value = values[i];
             if (value == null) continue;
-            RectTransform rect = value.transform.parent.GetComponent<TMP_InputField>() != null
-                ? value.transform.parent.GetComponent<RectTransform>() : value.rectTransform;
+            RectTransform rect = value.rectTransform;
             rect.anchorMin = new Vector2(0, rect.anchorMin.y);
             rect.anchorMax = new Vector2(0, rect.anchorMax.y);
             rect.offsetMin = new Vector2(start + width + value_gap, rect.offsetMin.y);

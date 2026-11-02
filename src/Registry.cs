@@ -80,18 +80,6 @@ internal sealed class Setting
         return whole_numbers || kind != ControlKind.Slider ? MathF.Round(bounded) : bounded;
     }
 
-    public bool try_number(string text, out float value)
-    {
-        value = 0;
-        if (kind != ControlKind.Slider || text == null || text.Length > 32) return false;
-        if (!float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsed)) return false;
-        if (!float.IsFinite(parsed)) return false;
-        float bounded = Math.Clamp(parsed, minimum, maximum);
-        if (whole_numbers && bounded != MathF.Truncate(bounded)) return false;
-        value = bounded;
-        return true;
-    }
-
     public string format(float value)
     {
         float shown = clamp(value);

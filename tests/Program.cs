@@ -40,18 +40,6 @@ internal static class Program
             "Recreated controls replace the oldest binding without accumulating views");
         Setting percent = make("Test", "Percent", ControlKind.Slider, 0f, 100f, false);
         require(percent.format(41.6f) == "42", "Wide sliders show whole numbers");
-        require(percent.try_number("16", out float typed) && typed == 16, "Typed values preserve exact placement increments");
-        require(percent.try_number("100", out typed) && typed == 100, "Typed slider bounds are inclusive");
-        require(percent.try_number("101", out typed) && typed == 100 && percent.try_number("-1", out typed) && typed == 0,
-            "Typed values outside the slider range clamp to the nearest bound");
-        require(!percent.try_number("NaN", out _) && !percent.try_number("Infinity", out _) &&
-            !percent.try_number("abc", out _) && !percent.try_number("", out _), "Invalid numeric text cannot change preferences");
-        require(!percent.try_number(new string('1', 33), out _), "Numeric input length is bounded");
-        require(size.try_number("0.75", out typed) && typed == 0.75f, "Fractional sliders accept decimal input");
-        require(patrols.try_number("5", out typed) && typed == 5 && !patrols.try_number("5.5", out _),
-            "Integer sliders reject fractional typed values");
-        require(patrols.try_number("16.5", out typed) && typed == 16,
-            "Out-of-range decimals clamp before integer validation");
         Setting position = registry.at(2);
         require(position.clamp(1.4f) == 1f && position.clamp(7f) == 2f, "Dropdown values snap to an option");
         Setting shortcut = make("Clear Minimap", "Zoom in", ControlKind.Keybind, 0, 2, true, new[] { "Unbound", "Page Up", "Mouse 3" });
