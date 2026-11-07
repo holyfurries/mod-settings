@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace ModSettings;
 
-internal enum ControlKind { Toggle, Slider, Dropdown, Keybind }
+internal enum ControlKind { Toggle, Slider, Dropdown, Keybind, Button }
 
 internal sealed class Setting
 {
@@ -31,6 +31,8 @@ internal sealed class Setting
                 throw new ArgumentOutOfRangeException(nameof(minimum));
         }
         if (kind == ControlKind.Dropdown && (options.Length < 2 || options.Length > 32)) throw new ArgumentOutOfRangeException(nameof(options));
+        if (kind == ControlKind.Button && (options.Length != 1 || string.IsNullOrWhiteSpace(options[0]) || options[0].Length > 32))
+            throw new ArgumentOutOfRangeException(nameof(options));
         if (kind == ControlKind.Keybind)
         {
             if (options.Length < 2 || options.Length > 512) throw new ArgumentOutOfRangeException(nameof(options));
@@ -82,6 +84,7 @@ internal sealed class Setting
 
     public string format(float value)
     {
+        if (kind == ControlKind.Button) return options[0];
         float shown = clamp(value);
         if (kind == ControlKind.Keybind) return options[(int)shown];
         if (whole_numbers) return shown.ToString("0", CultureInfo.InvariantCulture);

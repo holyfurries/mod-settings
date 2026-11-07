@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 — 2026-11-06
+
+- Let mods register action buttons using the native button appearance.
+
 ## 0.3.0 — 2026-10-23
 
 - Add configurable keybind controls with input capture, cancellation, and an

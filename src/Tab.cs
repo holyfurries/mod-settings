@@ -63,7 +63,8 @@ internal static class Tab
                 case ControlKind.Toggle: add_toggle(rows, templates.toggle, setting); break;
                 case ControlKind.Slider: add_slider(rows, templates.slider, setting); break;
                 case ControlKind.Dropdown: add_dropdown(rows, templates.dropdown, setting); break;
-                case ControlKind.Keybind: add_keybind(screen, rows, templates.dropdown, templates.keybind, setting); break;
+                case ControlKind.Keybind: add_button(screen, rows, templates.dropdown, templates.keybind, setting); break;
+                case ControlKind.Button: add_button(screen, rows, templates.dropdown, templates.keybind, setting); break;
                 default: throw new InvalidOperationException("Unknown control kind.");
             }
         }
@@ -255,7 +256,7 @@ internal static class Tab
         row.SetActive(true);
     }
 
-    private static void add_keybind(SettingsScreen screen, Transform rows, SettingsDropdown? template, Button? button_template, Setting setting)
+    private static void add_button(SettingsScreen screen, Transform rows, SettingsDropdown? template, Button? button_template, Setting setting)
     {
         if (template == null) throw new InvalidOperationException("No keybind row to copy.");
         if (button_template == null) throw new InvalidOperationException("No native keybind button to copy.");
@@ -310,6 +311,12 @@ internal static class Tab
         SettingsLayout.button(row, button, button_template.GetComponent<RectTransform>().rect.size);
         button.onClick.AddListener(new Action(() =>
         {
+            if (setting.kind == ControlKind.Button)
+            {
+                try { setting.write(0f); }
+                catch (Exception error) { MelonLogger.Warning($"Mod Settings: {setting.mod} button failed: {error.Message}"); }
+                return;
+            }
             if (capture?.row == row) return;
             try
             {

@@ -11,6 +11,14 @@ public static class Settings
     internal static readonly KeyCode[] key_codes = Enum.GetValues<KeyCode>();
     internal static float unsaved_since_seconds = float.NaN;
 
+    public static void button(string mod, string label, string caption, Action action)
+    {
+        if (action == null) throw new ArgumentNullException(nameof(action));
+        if (string.IsNullOrWhiteSpace(caption) || caption.Length > 32) throw new ArgumentOutOfRangeException(nameof(caption));
+        registry.add(new Setting(mod, label, ControlKind.Button, 0f, 1f, true, new[] { caption },
+            () => 0f, _ => action()));
+    }
+
     public static void toggle(string mod, string label, MelonPreferences_Entry<bool> entry)
     {
         if (entry == null) throw new ArgumentNullException(nameof(entry));

@@ -43,6 +43,7 @@ Settings.slider("My Mod", "Item count", count, minimum: 0, maximum: 16);
 Settings.slider("My Mod", "Overlay size", size, minimum: 0.5f, maximum: 3f);
 Settings.dropdown("My Mod", "Overlay corner", corner);
 Settings.keybind("My Mod", "Toggle overlay", shortcut);
+Settings.button("My Mod", "Preview overlay", "Preview", show_preview);
 ```
 
 Read `entry.Value` or subscribe to `entry.OnEntryValueChanged` to apply changes.

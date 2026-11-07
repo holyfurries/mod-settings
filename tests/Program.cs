@@ -5,6 +5,13 @@ internal static class Program
 {
     private static void Main()
     {
+        int clicks = 0;
+        var preview = new Setting("Death Notices", "Preview notices", ControlKind.Button, 0f, 1f, true,
+            new[] { "Preview" }, () => 0f, _ => clicks++);
+        require(preview.format(0f) == "Preview", "Action controls display their caption");
+        preview.write(0f);
+        preview.write(0f);
+        require(clicks == 2 && preview.read() == 0f, "Each click invokes the action without changing a preference");
         float stored = 0f;
         Setting make(string mod, string label, ControlKind kind = ControlKind.Toggle, float minimum = 0f, float maximum = 1f,
             bool whole_numbers = true, string[]? options = null) =>
